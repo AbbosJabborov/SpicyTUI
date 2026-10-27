@@ -1,0 +1,2 @@
+# SpicyTUI
+spotify uchun tui
