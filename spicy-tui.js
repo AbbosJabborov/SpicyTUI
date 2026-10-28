@@ -37,7 +37,7 @@
         C("goto", "args", "/goto <artist|album>", "open the current song's artist or album page", ["/goto artist"]),
         C("copy", "simple", "/copy", "copy the current song's link"),
         C("lyrics", "simple", "/lyrics", "open or close the Spicy Lyrics page"),
-        C("fullscreen", "simple", "/fullscreen", "toggle Spicy Lyrics fullscreen"),
+        C("fullscreen", "simple", "/fullscreen", "toggle Spicy Lyrics fullscreen (shortcut: Ctrl/Cmd + F)"),
         C("romanize", "simple", "/romanize", "toggle romanized lyrics (Spicy page must be open)"),
         C("sleep", "args", "/sleep <minutes|off>", "pause playback after a delay", ["/sleep 30", "/sleep off"]),
         C("clear", "simple", "/clear", "clear the input and messages"),
@@ -361,6 +361,20 @@
         }
     }
 
+    // the expand-arrows button Spicy Lyrics adds to the playbar
+    // Enter: click the playbar button. Exit: click the page's own X (Close) so Spicy runs its exit animation and navigation.
+    function toggleSpicyFullscreen() {
+        const page = document.getElementById("SpicyLyricsPage");
+        if (page && page.classList.contains("Fullscreen")) {
+            const close = page.querySelector("#Close");
+            if (close) { close.click(); return; }
+            if (document.fullscreenElement) { document.exitFullscreen(); return; }
+        }
+        const b = document.getElementById("SpicyLyrics_FullscreenButton");
+        if (!b) throw new Error("Spicy Lyrics fullscreen button not found");
+        b.click();
+    }
+
     let sleepTimer = 0, sleepAt = 0;
 
     // Commands that run straight from the typed text. Each returns a status message (or { msg, keep }).
@@ -446,12 +460,7 @@
             else H.push("/SpicyLyrics");
             return "";
         },
-        fullscreen: async () => {
-            const b = document.getElementById("SpicyLyrics_FullscreenButton");
-            if (!b) throw new Error("Spicy Lyrics fullscreen button not found");
-            b.click();
-            return "";
-        },
+        fullscreen: async () => { toggleSpicyFullscreen(); return ""; },
         romanize: async () => {
             const b = document.getElementById("RomanizationToggle");
             if (!b) throw new Error("open the Spicy Lyrics page first");
@@ -722,7 +731,7 @@ body{--stui-lift:40px;--stui-meta-h:78px;--stui-meta-gap:16px}
             const c = name ? findCommand(name) : null;
             if (name === "keys") {
                 rows = [hintRow("Tab", "complete the highlighted (or first) match"), hintRow("Enter", "run it; after Tab, plays that exact match"),
-                    hintRow("↑ ↓", "move the highlight; on an empty input = history"), hintRow("/  ·  Esc", "focus  ·  leave the input")];
+                    hintRow("↑ ↓", "move the highlight; on an empty input = history"), hintRow("/  ·  Esc", "focus  ·  leave the input"), hintRow("Ctrl/Cmd + F", "toggle Spicy Lyrics fullscreen")];
             } else if (c) {
                 rows = [hintRow(c.usage, ""), hintRow(c.desc, ""), ...c.examples.slice(0, 3).map((e) => hintRow(e, "example"))];
             } else {
@@ -870,6 +879,14 @@ body{--stui-lift:40px;--stui-meta-h:78px;--stui-meta-gap:16px}
         input.addEventListener("keyup", (e) => e.stopPropagation());
         input.addEventListener("keypress", (e) => e.stopPropagation());
         input.addEventListener("focus", placeAboveNowPlayingBar);
+
+        // Ctrl+F (Cmd+F on Mac) toggles Spicy Lyrics fullscreen from anywhere; Ctrl+Cmd+F is left to macOS
+        document.addEventListener("keydown", (e) => {
+            if (e.key.toLowerCase() !== "f" || e.altKey || e.shiftKey || e.ctrlKey === e.metaKey) return;
+            e.preventDefault();
+            e.stopPropagation();
+            try { toggleSpicyFullscreen(); } catch (err) { say("error: " + err.message, 4000); }
+        }, true);
 
         // "/" anywhere focuses the terminal (unless you're typing in another field)
         document.addEventListener("keydown", (e) => {
