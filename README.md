@@ -1,4 +1,5 @@
 # SpicyTUI
+<img width="645" height="274" alt="image" src="https://github.com/user-attachments/assets/f1cea4b4-5705-480a-8bcd-260440041b60" />
 
 A terminal-style command line for Spotify, built as a [Spicetify](https://spicetify.app/) extension to sit on top of [Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics).
 
