@@ -32,11 +32,11 @@ Type `/` anywhere, run a command, and get IDE-style autocomplete.
    - **Clone / pull** (then copy the file in, or clone straight into `Extensions` and use `SpicyTUI/spicy-tui.js` as the path in step 4):
 
      ```sh
-     git clone <this-repo-url>
+     git clone https://github.com/AbbosJabborov/SpicyTUI.git
      ```
 
      To update later: `git pull`, then copy the file again.
-   - **Download**: grab the ZIP from GitHub, unzip it and paste `spicy-tui.js` into `Extensions`.
+   - **Download**: grab the ZIP from GitHub, unzip it, and paste `spicy-tui.js` into `Extensions`.
 
 4. Enable it and apply:
 
